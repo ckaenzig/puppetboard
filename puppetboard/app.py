@@ -301,6 +301,18 @@ def epfl_inventory():
             except KeyError:
                 nodedata[node].append("undef")
 
+    # Global counters
+    phys_contract_count = 0
+    virt_contract_count = 0
+    phys_non_contract_count = 0
+    virt_non_contract_count = 0
+
+    for node in nodelist:
+        phys_contract_count += 1 if (nodedata[node]['contract'] == 'true' and nodedata[node]['is_virtual'] == 'false')
+        virt_contract_count += 1 if (nodedata[node]['contract'] == 'true' and nodedata[node]['is_virtual'] == 'true')
+        phys_non_contract_count += 1 if (nodedata[node]['contract'] == 'false' and nodedata[node]['is_virtual'] == 'false')
+        virt_non_contract_count += 1 if (nodedata[node]['contract'] == 'false' and nodedata[node]['is_virtual'] == 'true')
+
     return Response(stream_with_context(
         stream_template('epfl_inventory.html', nodedata=nodedata, fact_desc=fact_desc)))
 
