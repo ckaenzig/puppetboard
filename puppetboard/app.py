@@ -308,13 +308,13 @@ def epfl_inventory():
     virt_non_contract_count = 0
 
     for node in nodelist:
-        if (nodedata[node]['contract'] == 'true' and nodedata[node]['is_virtual'] == 'false'):
+        if (factvalues[node,'contract'] == 'true' and factvalues[node,'is_virtual'] == 'false'):
           phys_contract_count += 1
-        if (nodedata[node]['contract'] == 'true' and nodedata[node]['is_virtual'] == 'true'):
+        if (factvalues[node,'contract'] == 'true' and factvalues[node,'is_virtual'] == 'true'):
             virt_contract_count += 1
-        if (nodedata[node]['contract'] == 'false' and nodedata[node]['is_virtual'] == 'false'):
+        if (factvalues[node,'contract'] == 'false' and factvalues[node,'is_virtual'] == 'false'):
             phys_non_contract_count += 1
-        if (nodedata[node]['contract'] == 'false' and nodedata[node]['is_virtual'] == 'true'):
+        if (factvalues[node,'contract'] == 'false' and factvalues[node,'is_virtual'] == 'true'):
             virt_non_contract_count += 1
 
     return Response(stream_with_context(
