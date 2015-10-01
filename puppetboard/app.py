@@ -264,13 +264,22 @@ def epfl_inventory():
 
     # load the list of items/facts we want in our inventory
     try:
-        inv_facts = app.config['INVENTORY_FACTS']
+        inv_facts = app.config['EPFL_INVENTORY_FACTS']
     except KeyError:
         inv_facts = [ ('Hostname'      ,'fqdn'              ),
-                      ('IP Address'    ,'ipaddress'         ),
-                      ('OS'            ,'lsbdistdescription'),
-                      ('Architecture'  ,'hardwaremodel'     ),
-                      ('Kernel Version','kernelrelease'     ) ]
+                      ('Virtual'       ,'virtual'           ),
+                      ('Product Name'  ,'productname'       ),
+                      ('Warranty Days Left'  ,'warranty_days_left'),
+                      ('Warranty Start'  ,'warranty_start'),
+                      ('Warranty End'  ,'warranty_end'),
+                      ('Host Function'  ,'hostfunc'),
+                      ('Puppet Environment'  ,'puppet_environment'),
+                      ('Network Eth0'  ,'network_eth0'),
+                      ('Operating System'  ,'operatingsystem'),
+                      ('Operating System Release'  ,'operatingsystemrelease'),
+                      ('Architecture'  ,'architecture'),
+                      ('Serial Number'  ,'serialnumber'),
+                      ('Contract'  ,'contract') ]
 
     # generate a list of descriptions and a list of fact names
     # from the list of tuples inv_facts.
