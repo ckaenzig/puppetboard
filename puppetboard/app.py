@@ -318,7 +318,7 @@ def epfl_inventory():
             virt_non_contract_count += 1
 
     return Response(stream_with_context(
-        stream_template('epfl_inventory.html', nodedata=nodedata, fact_desc=fact_desc)))
+        stream_template('epfl_inventory.html', nodedata=nodedata, fact_desc=fact_desc, phys_contract_count=phys_contract_count, virt_contract_count=virt_contract_count, phys_non_contract_count=phys_non_contract_count,virt_non_contract_count=virt_non_contract_count)))
 
 
 @app.route('/node/<node_name>')
