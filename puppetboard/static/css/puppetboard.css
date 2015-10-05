@@ -36,7 +36,7 @@ th.tablesorter-headerDesc::after {
   display: block;
 }
 
-.ui.header.failed, .ui.table .failed {
+.ui.header.failed, .ui.line.failed {
   color: #AA4643;
 }
 
@@ -44,7 +44,7 @@ th.tablesorter-headerDesc::after {
   background-color: #AA4643;
 }
 
-.ui.header.changed, .ui.table .changed {
+.ui.header.changed, .ui.line.changed {
   color: #4572A7;
 }
 
@@ -70,6 +70,10 @@ th.tablesorter-headerDesc::after {
 
 .ui.label.unchanged {
   background-color: #89A54E;
+}
+
+.ui.label.skipped, .ui.line.changed {
+  background-color: orange;
 }
 
 .ui.label.skipped {
