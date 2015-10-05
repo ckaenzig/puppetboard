@@ -36,7 +36,7 @@ th.tablesorter-headerDesc::after {
   display: block;
 }
 
-.ui.header.failed, .ui.table > .failed {
+.ui.header.failed, .ui.table .failed {
   color: #AA4643;
 }
 
@@ -44,7 +44,7 @@ th.tablesorter-headerDesc::after {
   background-color: #AA4643;
 }
 
-.ui.header.changed, .ui.table > .changed {
+.ui.header.changed, .ui.table .changed {
   color: #4572A7;
 }
 
