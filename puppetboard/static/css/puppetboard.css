@@ -36,6 +36,26 @@ th.tablesorter-headerDesc::after {
   display: block;
 }
 
+.status-failed {
+  background-color: #AA4643;
+}
+
+.status-changed {
+  background-color: #4572A7;
+}
+
+.status-unreported {
+  background-color: #3D96AE;
+}
+
+.status-noop {
+  background-color: #DB843D;
+}
+
+.status-unchanged {
+  background-color: #89A54E;
+}
+
 .count {
   width: 14%;
   text-align: center;
