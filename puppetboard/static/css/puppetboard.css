@@ -36,23 +36,23 @@ th.tablesorter-headerDesc::after {
   display: block;
 }
 
-.status-failed {
+.ui.label.status.failed {
   background-color: #AA4643;
 }
 
-.status-changed {
+.ui.label.status.changed {
   background-color: #4572A7;
 }
 
-.status-unreported {
+.ui.label.status.unreported {
   background-color: #3D96AE;
 }
 
-.status-noop {
+.ui.label.status.noop {
   background-color: #DB843D;
 }
 
-.status-unchanged {
+.ui.label.status.unchanged {
   background-color: #89A54E;
 }
 
