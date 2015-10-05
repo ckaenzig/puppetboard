@@ -72,8 +72,8 @@ th.tablesorter-headerDesc::after {
   background-color: #89A54E;
 }
 
-.ui.label.skipped, .ui.line.skipped {
-  background-color: orange;
+.ui.line.skipped {
+  color: orange;
 }
 
 .ui.label.skipped {
