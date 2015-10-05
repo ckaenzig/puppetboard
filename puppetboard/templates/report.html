@@ -39,9 +39,9 @@
   <tbody>
     {% for event in events %}
     {% if not event.failed and event.item['old'] != event.item['new'] %}
-      <tr id='event-{{loop.index}}' class='changed'>
+      <tr id='event-{{loop.index}}' class='line changed'>
     {% else %}
-      <tr id='event-{{loop.index}}' class='{{event.status}}'>
+      <tr id='event-{{loop.index}}' class='line {{event.status}}'>
     {% endif %}
       <td>{{event.item['type']}}[{{event.item['title']}}]</td>
       <td>{{event.status}}</td>
