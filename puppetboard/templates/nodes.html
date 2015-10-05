@@ -19,15 +19,15 @@
       <td>
         <a class="ui small status label
           {% if node.status == 'failed' %}
-            status-failed
+            failed
           {% elif node.status == 'changed' %}
-            status-changed
+            changed
           {% elif node.status == 'unreported' %}
-            status-unreported
+            unreported
           {% elif node.status == 'noop' %}
-            status-noop
+            noop
           {% elif node.status == 'unchanged' %}
-            status-unchanged
+            unchanged
           {% endif %}
           " href="{{url_for('report_latest', node_name=node.name)}}">
             {{node.status}}
