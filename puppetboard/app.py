@@ -130,6 +130,7 @@ def index():
         'noop': 0
         }
 
+    report_status = {}
     for node in nodes:
         if node.status == 'unreported':
             stats['unreported'] += 1
@@ -144,12 +145,18 @@ def index():
 
         if node.status != 'unchanged':
             nodes_overview.append(node)
+        reports = get_or_abort(puppetdb._query, 'reports',
+                               query='["=","certname","{0}"]'.format(node.name),
+                               limit=1)
+        if len(reports) > 0:
+            report_status[node.name] = reports[0]['status']
 
     return render_template(
         'index.html',
         metrics=metrics,
         nodes=nodes_overview,
-        stats=stats
+        stats=stats,
+        report_status=report_status
         )
 
 
