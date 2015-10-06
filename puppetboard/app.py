@@ -182,7 +182,7 @@ def nodes():
         if len(reports) > 0:
             report_status[node.name] = reports[0]['status']
     return Response(stream_with_context(
-        stream_template('nodes.html', nodes=nodes)))
+        stream_template('nodes.html', nodes=nodes, report_status=report_status)))
 
 
 @app.route('/inventory')
