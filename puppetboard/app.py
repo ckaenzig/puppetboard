@@ -180,8 +180,7 @@ def nodes():
                                query='["=","certname","{0}"]'.format(node.name),
                                limit=1)
         if len(reports) > 0:
-            report = reports[0]['hash']
-            report_status[node.name] = report.status
+            report_status[node.name] = reports[0]['status']
     return Response(stream_with_context(
         stream_template('nodes.html', nodes=nodes)))
 
