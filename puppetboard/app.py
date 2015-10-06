@@ -37,7 +37,6 @@ app.secret_key = app.config['SECRET_KEY']
 app.jinja_env.filters['jsonprint'] = jsonprint
 
 puppetdb = connect(
-    api_version=4,
     host=app.config['PUPPETDB_HOST'],
     port=app.config['PUPPETDB_PORT'],
     ssl_verify=app.config['PUPPETDB_SSL_VERIFY'],
