@@ -34,7 +34,7 @@ setup(
         "WTForms < 2.0",
         ],
     dependency_links=[
-        "git+https://github.com/corey-hammerton/pypuppetdb@v4-api#egg=pypuppetdb-0.1.0",
+        "git+https://github.com/corey-hammerton/pypuppetdb@v4-api#egg=pypuppetdb",
         ],
     keywords="puppet puppetdb puppetboard",
     classifiers=[

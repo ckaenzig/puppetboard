@@ -6,4 +6,5 @@ WTForms==1.0.5
 Werkzeug==0.9.4
 itsdangerous==0.23
 pypuppetdb==0.1.1
+-e git+https://github.com/corey-hammerton/pypuppetdb@v4-api#egg=pypuppetdb
 requests==2.2.1
