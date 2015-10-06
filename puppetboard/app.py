@@ -101,7 +101,7 @@ def index():
     """
     # TODO: Would be great if we could parallelize this somehow, doing these
     # requests in sequence is rather pointless.
-    prefix = 'com.puppetlabs.puppetdb.query.population'
+    prefix = 'puppetlabs.puppetdb.query.population'
     num_nodes = get_or_abort(
         puppetdb.metric,
         "{0}{1}".format(prefix, ':type=default,name=num-nodes'))
