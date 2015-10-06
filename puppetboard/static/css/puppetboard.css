@@ -70,7 +70,7 @@ background: repeating-linear-gradient(
   background-color: #3D96AE;
 }
 
-.ui.label.changed.compil-failed {
+.ui.label.unreported.compil-failed {
 background: repeating-linear-gradient(
   45deg,
   #3D96AE,
