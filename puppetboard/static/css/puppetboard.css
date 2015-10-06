@@ -70,6 +70,16 @@ background: repeating-linear-gradient(
   background-color: #3D96AE;
 }
 
+.ui.label.changed.compil-failed {
+background: repeating-linear-gradient(
+  45deg,
+  #3D96AE,
+  #3D96AE 10px,
+  #AA4643 10px,
+  #AA4643 20px
+  );
+}
+
 .ui.header.noop {
   color: #DB843D;
 }
