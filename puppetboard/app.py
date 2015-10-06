@@ -169,12 +169,19 @@ def nodes():
         unreported=app.config['UNRESPONSIVE_HOURS'],
         with_status=True)
     nodes = []
+    report_status = {}
     for node in yield_or_stop(nodelist):
         if status_arg:
             if node.status == status_arg:
                 nodes.append(node)
         else:
             nodes.append(node)
+        reports = get_or_abort(puppetdb._query, 'reports',
+                               query='["=","certname","{0}"]'.format(node.name),
+                               limit=1)
+        if len(reports) > 0:
+            report = reports[0]['hash']
+            report_status[node.name] = report.status
     return Response(stream_with_context(
         stream_template('nodes.html', nodes=nodes)))
 
