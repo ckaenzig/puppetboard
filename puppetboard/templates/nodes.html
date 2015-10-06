@@ -33,7 +33,7 @@
           {% endif %}
           " href="{{url_for('report_latest', node_name=node.name)}}">
           {% if node.status == 'unchanged' and report_status[node.name] == 'failed' %}
-            compilation failed
+            compilation failed ( {{node.status}})
           {% else %}
             {{node.status}}
           {% endif %}
