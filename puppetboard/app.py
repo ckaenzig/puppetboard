@@ -169,7 +169,7 @@ def nodes():
         unreported=app.config['UNRESPONSIVE_HOURS'],
         with_status=True)
     nodes = []
-    report_status = []
+    report_status = {}
     for node in yield_or_stop(nodelist):
         if status_arg:
             if node.status == status_arg:
@@ -180,7 +180,7 @@ def nodes():
                                query='["=","certname","{0}"]'.format(node.name),
                                limit=1)
         if len(reports) > 0:
-            report_status.append(reports[0]['status'])
+            report_status[node.name] = reports[0]['status']
     return Response(stream_with_context(
         stream_template('nodes.html', nodes=nodes, report_status=report_status)))
 

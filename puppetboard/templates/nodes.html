@@ -30,7 +30,7 @@
             unchanged
           {% endif %}
           " href="{{url_for('report_latest', node_name=node.name)}}">
-            {{node.status}} ({{report_status[node_name]}})
+            {{node.status}} ({{report_status[node.name]}})
           </a>
           {% if node.status=='unreported'%}
             <span class="ui small label status"> {{ node.unreported_time }} </label>
