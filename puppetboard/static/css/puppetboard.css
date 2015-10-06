@@ -52,6 +52,16 @@ th.tablesorter-headerDesc::after {
   background-color: #4572A7;
 }
 
+.ui.label.changed.compil-failed {
+background: repeating-linear-gradient(
+  45deg,
+  #4572A7,
+  #4572A7 10px,
+  #AA4643 10px,
+  #AA4643 20px
+  );
+}
+
 .ui.header.unreported {
   color: #3D96AE;
 }
@@ -72,12 +82,32 @@ th.tablesorter-headerDesc::after {
   background-color: #89A54E;
 }
 
+.ui.label.unchanged.compil-failed {
+background: repeating-linear-gradient(
+  45deg,
+  #89A54E,
+  #89A54E 10px,
+  #AA4643 10px,
+  #AA4643 20px
+  );
+}
+
 .ui.line.skipped {
   color: orange;
 }
 
 .ui.label.skipped {
   background-color: orange;
+}
+
+.ui.label.skipped.compil-failed {
+background: repeating-linear-gradient(
+  45deg,
+  orange,
+  orange 10px,
+  #AA4643 10px,
+  #AA4643 20px
+  );
 }
 
 .count {

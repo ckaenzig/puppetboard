@@ -26,13 +26,14 @@
             unreported
           {% elif node.status == 'noop' %}
             noop
-          {% elif node.status == 'unchanged' and report_status[node.name] == 'failed' %}
-            failed
           {% elif node.status == 'unchanged' %}
             unchanged
           {% endif %}
+          {% if report_status[node.name] == 'failed' %}
+            compil-failed
+          {% endif %}
           " href="{{url_for('report_latest', node_name=node.name)}}">
-          {% if node.status == 'unchanged' and report_status[node.name] == 'failed' %}
+          {% if report_status[node.name] == 'failed' %}
             compilation failed ( {{node.status}})
           {% else %}
             {{node.status}}
