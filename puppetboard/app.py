@@ -385,7 +385,7 @@ def report(node_name, report_id):
     configuration_version. This allows for better integration
     into puppet-hipchat.
     """
-    reports = puppetdb.reports('["=", "certname", "{0}"]'.format(node_name))
+    reports = puppetdb.reports(query='["=", "certname", "{0}"]'.format(node_name))
 
     for report in reports:
         if report.hash_ == report_id or report.version == report_id:
