@@ -350,7 +350,7 @@ def reports_node(node_name):
     a table displaying those reports."""
     reports = limit_reports(
         yield_or_stop(
-            puppetdb.reports('["=", "certname", "{0}"]'.format(node_name))),
+            puppetdb.reports(query='["=", "certname", "{0}"]'.format(node_name))),
         app.config['REPORTS_COUNT'])
     return render_template(
         'reports_node.html',
