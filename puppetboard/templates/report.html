@@ -26,6 +26,22 @@
   </tbody>
 </table>
 
+<h1>Logs</h1>
+<table class='ui basic table compact'>
+  <thead>
+    <tr>
+      <td>Log</td>
+    </tr>
+  </thead>
+  <tbody>
+    {% for log in logs %}
+      <tr id='log-{{loop.index}}' class='ui line'>
+        <td>{{log}}</td>
+      </tr>
+    {% endfor %} 
+  </tbody>
+</table>
+
 <h1>Events</h1>
 <table class='ui basic table compact'>
   <thead>
