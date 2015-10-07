@@ -324,13 +324,13 @@ def epfl_inventory():
 
     for node in nodelist:
         total_count += 1
-        if (factvalues[node,'contract'] == 'true' and factvalues[node,'is_virtual'] == 'false'):
+        if (factvalues[node,'contract'] == 'true' and (factvalues[node,'is_virtual'] == 'false' or factvalues[node,'is_virtual'] == False)):
           phys_contract_count += 1
-        elif (factvalues[node,'contract'] == 'true' and factvalues[node,'is_virtual'] == 'true'):
+        elif (factvalues[node,'contract'] == 'true' and (factvalues[node,'is_virtual'] == 'true' or factvalues[node,'is_virtual'] == True)):
             virt_contract_count += 1
-        elif (factvalues[node,'contract'] == 'false' and factvalues[node,'is_virtual'] == 'false'):
+        elif (factvalues[node,'contract'] == 'false' and (factvalues[node,'is_virtual'] == 'false' or factvalues[node,'is_virtual'] == False)):
             phys_non_contract_count += 1
-        elif (factvalues[node,'contract'] == 'false' and factvalues[node,'is_virtual'] == 'true'):
+        elif (factvalues[node,'contract'] == 'false' and (factvalues[node,'is_virtual'] == 'true' or factvalues[node,'is_virtual'] == True)):
             virt_non_contract_count += 1
         else:
             other_count += 1
