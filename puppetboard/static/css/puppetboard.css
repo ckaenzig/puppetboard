@@ -124,6 +124,10 @@ background: repeating-linear-gradient(
   );
 }
 
+.break-all {
+  word-break: break-all;
+}
+
 .count {
   width: 14%;
   text-align: center;
