@@ -72,7 +72,7 @@
         </thead>
         <tbody class="searchable">
           {% for node in nodes %}
-          {% if node.status != 'unchanged' %}
+          {% if node.status != 'unchanged' or report_status[node.name] == 'failed' %}
           <tr>
             <td>
               <a class="ui small status label
