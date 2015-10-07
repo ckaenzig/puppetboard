@@ -35,7 +35,15 @@
   </thead>
   <tbody>
     {% for log in logs %}
-      <tr id='log-{{loop.index}}' class='ui line'>
+      <tr id='log-{{loop.index}}' class='ui line
+        {% if log['level'] == 'err' %}
+          failed
+        {% elif log['level'] == 'warning' %}
+          warning
+        {% elif log['level'] == 'info' %}
+          info
+        {% endif % }
+        '>
         <td>{{log['level']}}</td>
         <td>{{log['source']}}</td>
         <td>{{log['tags']|join(', ')}}</td>

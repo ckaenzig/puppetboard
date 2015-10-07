@@ -88,6 +88,10 @@ background: repeating-linear-gradient(
   background-color: #DB843D;
 }
 
+.ui.line.info {
+  color: #89A54E;
+}
+
 .ui.label.unchanged {
   background-color: #89A54E;
 }
@@ -102,7 +106,7 @@ background: repeating-linear-gradient(
   );
 }
 
-.ui.line.skipped {
+.ui.line.skipped, .ui.line.warning {
   color: orange;
 }
 
