@@ -319,26 +319,21 @@ def epfl_inventory():
     virt_contract_count = 0
     phys_non_contract_count = 0
     virt_non_contract_count = 0
-    other_count = 0
-    other = []
     total_count = 0
 
     for node in nodelist:
         total_count += 1
-        if (factvalues[node,'contract'] == 'true' and (factvalues[node,'is_virtual'] == 'false' or factvalues[node,'is_virtual'] == False)):
+        if (factvalues[node,'contract'] in ['true', True] and factvalues[node,'is_virtual'] in ['false', False]):
           phys_contract_count += 1
-        elif (factvalues[node,'contract'] == 'true' and (factvalues[node,'is_virtual'] == 'true' or factvalues[node,'is_virtual'] == True)):
+        elif (factvalues[node,'contract'] in ['true', True] and factvalues[node,'is_virtual'] in ['true', True]):
             virt_contract_count += 1
-        elif (factvalues[node,'contract'] == 'false' and (factvalues[node,'is_virtual'] == 'false' or factvalues[node,'is_virtual'] == False)):
+        elif (factvalues[node,'contract'] in ['false', False] and factvalues[node,'is_virtual'] in ['false', False]):
             phys_non_contract_count += 1
-        elif (factvalues[node,'contract'] == 'false' and (factvalues[node,'is_virtual'] == 'true' or factvalues[node,'is_virtual'] == True)):
+        elif (factvalues[node,'contract'] in ['false', False] and factvalues[node,'is_virtual'] in ['true', True]):
             virt_non_contract_count += 1
-        else:
-            other_count += 1
-            other.append(node)
 
     return Response(stream_with_context(
-        stream_template('epfl_inventory.html', nodedata=nodedata, fact_desc=fact_desc, phys_contract_count=phys_contract_count, virt_contract_count=virt_contract_count, phys_non_contract_count=phys_non_contract_count,virt_non_contract_count=virt_non_contract_count,total_count=total_count,other_count=other_count,other=other)))
+        stream_template('epfl_inventory.html', nodedata=nodedata, fact_desc=fact_desc, phys_contract_count=phys_contract_count, virt_contract_count=virt_contract_count, phys_non_contract_count=phys_non_contract_count,virt_non_contract_count=virt_non_contract_count,total_count=total_count)))
 
 
 @app.route('/node/<node_name>')
