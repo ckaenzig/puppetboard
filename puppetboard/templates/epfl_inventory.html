@@ -7,23 +7,19 @@
 <table class='ui compact basic table stats'>
   <thead>
     <tr>
-      <th colspan="2">Machines with contract</th>
+      <th>Machine type</th><th>Count</th>
     </tr>
   </thead>
   <tr>
-    <td>Physical</td><td>{{ phys_contract_count }}</td>
+    <td>Physical with contract</td><td>{{ phys_contract_count }}</td>
   </tr><tr>
-    <td>Virtual</td><td>{{ virt_contract_count }}</td>
+    <td>Virtual with contract</td><td>{{ virt_contract_count }}</td>
   </tr>
-  <thead>
-    <tr>
-      <th colspan="2">Machines without contract</th>
-    </tr>
-  </thead>
   <tr>
-    <td>Physical</td><td>{{ phys_non_contract_count }}</td>
+    <td>Physical without contract</td><td>{{ phys_non_contract_count }}</td>
   </tr><tr>
-    <td>Virtual</td><td>{{ virt_non_contract_count }}</td>
+    <td>Virtual without contract</td><td>{{ virt_non_contract_count }}</td>
+    <td>Other (should not happen)</td><td>{{ other_count }}</td>
   </tr>
 </table>
 <table class='ui compact basic table inventory'>
