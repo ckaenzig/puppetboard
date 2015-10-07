@@ -318,19 +318,21 @@ def epfl_inventory():
     virt_contract_count = 0
     phys_non_contract_count = 0
     virt_non_contract_count = 0
+    total_count = 0
 
     for node in nodelist:
+        total_count += 1
         if (factvalues[node,'contract'] == 'true' and factvalues[node,'is_virtual'] == 'false'):
           phys_contract_count += 1
-        if (factvalues[node,'contract'] == 'true' and factvalues[node,'is_virtual'] == 'true'):
+        elif (factvalues[node,'contract'] == 'true' and factvalues[node,'is_virtual'] == 'true'):
             virt_contract_count += 1
-        if (factvalues[node,'contract'] == 'false' and factvalues[node,'is_virtual'] == 'false'):
+        elif (factvalues[node,'contract'] == 'false' and factvalues[node,'is_virtual'] == 'false'):
             phys_non_contract_count += 1
-        if (factvalues[node,'contract'] == 'false' and factvalues[node,'is_virtual'] == 'true'):
+        elif (factvalues[node,'contract'] == 'false' and factvalues[node,'is_virtual'] == 'true'):
             virt_non_contract_count += 1
 
     return Response(stream_with_context(
-        stream_template('epfl_inventory.html', nodedata=nodedata, fact_desc=fact_desc, phys_contract_count=phys_contract_count, virt_contract_count=virt_contract_count, phys_non_contract_count=phys_non_contract_count,virt_non_contract_count=virt_non_contract_count)))
+        stream_template('epfl_inventory.html', nodedata=nodedata, fact_desc=fact_desc, phys_contract_count=phys_contract_count, virt_contract_count=virt_contract_count, phys_non_contract_count=phys_non_contract_count,virt_non_contract_count=virt_non_contract_count,total_count=total_count)))
 
 
 @app.route('/node/<node_name>')
