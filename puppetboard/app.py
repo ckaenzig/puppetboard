@@ -403,7 +403,7 @@ def report(node_name, report_id):
     for report in reports:
         if report.hash_ == report_id or report.version == report_id:
             events = report.events()
-            logs = report.logs
+            logs = iter(report.logs)
             return render_template(
                 'report.html',
                 report=report,
