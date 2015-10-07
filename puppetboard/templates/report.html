@@ -30,13 +30,19 @@
 <table class='ui basic table compact'>
   <thead>
     <tr>
-      <td>Log</td>
+      <th>Level</th><th>Source</th><th>Tags</th><th>Time</th><th>Message</th><th>File</th><th>Line</th>
     </tr>
   </thead>
   <tbody>
     {% for log in logs %}
       <tr id='log-{{loop.index}}' class='ui line'>
-        <td>{{log}}</td>
+        <td>{{log['level']}}</td>
+        <td>{{log['source']}}</td>
+        <td>{{log['tags']|join(', ')}}</td>
+        <td>{{log['time']}}</td>
+        <td>{{log['message']}}</td>
+        <td>{{log['file']}}</td>
+        <td>{{log['line']}}</td>
       </tr>
     {% endfor %} 
   </tbody>
