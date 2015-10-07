@@ -279,6 +279,7 @@ def epfl_inventory():
         inv_facts = app.config['EPFL_INVENTORY_FACTS']
     except KeyError:
         inv_facts = [ ('Hostname'      ,'fqdn'              ),
+                      ('Is Virtual'       ,'is_virtual'           ),
                       ('Virtual'       ,'virtual'           ),
                       ('Product Name'  ,'productname'       ),
                       ('Warranty Days Left'  ,'warranty_days_left'),
