@@ -1,0 +1,44 @@
+{% extends 'layout.html' %}
+{% block content %}
+<div class="ui fluid icon input hide" style="margin-bottom:20px">
+  <input autofocus="autofocus" class="filter-table" placeholder="Type here to filter...">
+</div>
+<h1>{{total_count}} machines</h1>
+<table class='ui compact basic table stats'>
+  <thead>
+    <tr>
+      <th>Machine type</th><th>Count</th>
+    </tr>
+  </thead>
+  <tr>
+    <td>Physical with contract</td><td>{{ phys_contract_count }}</td>
+  </tr><tr>
+    <td>Virtual with contract</td><td>{{ virt_contract_count }}</td>
+  </tr>
+  <tr>
+    <td>Physical without contract</td><td>{{ phys_non_contract_count }}</td>
+  </tr><tr>
+    <td>Virtual without contract</td><td>{{ virt_non_contract_count }}</td>
+  </tr>
+</table>
+<div class="ui divider"></div>
+<table class='ui compact basic table inventory'>
+  <thead>
+    <tr>
+      {% for description in fact_desc %}
+      <th>{{description}}</th>
+      {% endfor %}
+    </tr>
+  </thead>
+  <tbody class="searchable">
+    {% for nodename in nodedata %}
+    <tr>
+ 
+      {% for item in nodedata[nodename] %}
+      <td>{{item}}</td>
+      {% endfor %}
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock content %}

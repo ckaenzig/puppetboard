@@ -317,6 +317,103 @@ def inventory(env):
             current_env=env)))
 
 
+@app.route('/epfl_inventory', defaults={'env': app.config['DEFAULT_ENVIRONMENT']})
+@app.route('/<env>/epfl_inventory')
+def inventory(env):
+    """Fetch all (active) nodes from PuppetDB and stream a table displaying
+    those nodes along with a set of facts about them.
+
+    Downside of the streaming aproach is that since we've already sent our
+    headers we can't abort the request if we detect an error. Because of this
+    we'll end up with an empty table instead because of how yield_or_stop
+    works. Once pagination is in place we can change this but we'll need to
+    provide a search feature instead.
+
+    :param env: Search for facts in this environment
+    :type env: :obj:`string`
+    """
+    check_env(env)
+
+    fact_desc  = []     # a list of fact descriptions to go
+                        # in the table header
+    fact_names = []     # a list of inventory fact names
+    factvalues = {}     # values of the facts for all the nodes
+                        # indexed by node name and fact name
+    nodedata   = {}     # a dictionary containing list of inventoried
+                        # facts indexed by node name
+    nodelist   = set()  # a set of node names
+
+    # load the list of items/facts we want in our inventory
+    try:
+        inv_facts = app.config['EPFL_INVENTORY_FACTS']
+    except KeyError:
+        inv_facts = [ ('Hostname'      ,'fqdn'              ),
+                      ('Virtual'       ,'virtual'           ),
+                      ('Product Name'  ,'productname'       ),
+                      ('Warranty Days Left'  ,'warranty_days_left'),
+                      ('Warranty Start'  ,'warranty_start'),
+                      ('Warranty End'  ,'warranty_end'),
+                      ('Host Function'  ,'hostfunc'),
+                      ('Puppet Environment'  ,'puppet_environment'),
+                      ('Network Eth0'  ,'network_eth0'),
+                      ('Operating System'  ,'operatingsystem'),
+                      ('Operating System Release'  ,'operatingsystemrelease'),
+                      ('Architecture'  ,'architecture'),
+                      ('Serial Number'  ,'serialnumber'),
+                      ('Contract'  ,'contract') ]
+
+    # generate a list of descriptions and a list of fact names
+    # from the list of tuples inv_facts.
+    for description,name in inv_facts:
+        fact_desc.append(description)
+        fact_names.append(name)
+
+    if env == '*':
+        query = '["or", {0}]]'.format(
+            ', '.join('["=", "name", "{0}"]'.format(name)
+                for name in fact_names))
+    else:
+        query = '["and", ["=", "environment", "{0}"], ["or", {1}]]'.format(
+            env,
+            ', '.join('["=", "name", "{0}"]'.format(name)
+                for name in fact_names))
+
+    # get all the facts from PuppetDB
+    facts = puppetdb.facts(query=query)
+
+    # convert the json in easy to access data structure
+    for fact in facts:
+        factvalues[fact.node,fact.name] = fact.value
+        nodelist.add(fact.node)
+
+    # generate the per-host data
+    for node in nodelist:
+        nodedata[node] = []
+        for fact_name in fact_names:
+            try:
+                nodedata[node].append(factvalues[node,fact_name])
+            except KeyError:
+                nodedata[node].append("undef")
+
+    # Global counters
+    phys_contract_count = 0
+    virt_contract_count = 0
+    phys_non_contract_count = 0
+    virt_non_contract_count = 0
+
+    for node in nodelist:
+        if (factvalues[node,'contract'] == 'true' and factvalues[node,'is_virtual'] == 'false'):
+          phys_contract_count += 1
+        if (factvalues[node,'contract'] == 'true' and factvalues[node,'is_virtual'] == 'true'):
+            virt_contract_count += 1
+        if (factvalues[node,'contract'] == 'false' and factvalues[node,'is_virtual'] == 'false'):
+            phys_non_contract_count += 1
+        if (factvalues[node,'contract'] == 'false' and factvalues[node,'is_virtual'] == 'true'):
+            virt_non_contract_count += 1
+
+    return Response(stream_with_context(
+        stream_template('epfl_inventory.html', nodedata=nodedata, fact_desc=fact_desc, phys_contract_count=phys_contract_count, virt_contract_count=virt_contract_count, phys_non_contract_count=phys_non_contract_count,virt_non_contract_count=virt_non_contract_count)))
+
 @app.route('/node/<node_name>', defaults={'env': app.config['DEFAULT_ENVIRONMENT']})
 @app.route('/<env>/node/<node_name>')
 def node(env, node_name):
