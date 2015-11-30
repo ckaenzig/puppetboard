@@ -319,7 +319,7 @@ def inventory(env):
 
 @app.route('/epfl_inventory', defaults={'env': app.config['DEFAULT_ENVIRONMENT']})
 @app.route('/<env>/epfl_inventory')
-def inventory(env):
+def epfl_inventory(env):
     """Fetch all (active) nodes from PuppetDB and stream a table displaying
     those nodes along with a set of facts about them.
 
