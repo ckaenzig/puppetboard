@@ -15,7 +15,6 @@ from flask import (
     Response, stream_with_context, redirect,
     request
     )
-from flask_wtf.csrf import CsrfProtect
 
 from pypuppetdb import connect
 
@@ -27,7 +26,6 @@ from puppetboard.utils import (
 
 
 app = Flask(__name__)
-CsrfProtect(app)
 
 app.config.from_object('puppetboard.default_settings')
 graph_facts = app.config['GRAPH_FACTS']
@@ -78,14 +76,12 @@ def environments():
 
     return x
 
-def check_env(env):
+def check_env(env, envs):
     if env != '*' and env not in envs:
         abort(404)
 
 app.jinja_env.globals['url_for_pagination'] = url_for_pagination
 app.jinja_env.globals['url_for_environments'] = url_for_environments
-
-envs = environments()
 
 @app.context_processor
 def utility_processor():
@@ -97,16 +93,19 @@ def utility_processor():
 
 @app.errorhandler(400)
 def bad_request(e):
+    envs = environments()
     return render_template('400.html', envs=envs), 400
 
 
 @app.errorhandler(403)
 def forbidden(e):
+    envs = environments()
     return render_template('403.html', envs=envs), 400
 
 
 @app.errorhandler(404)
 def not_found(e):
+    envs = environments()
     return render_template('404.html', envs=envs), 404
 
 
@@ -114,11 +113,13 @@ def not_found(e):
 def precond_failed(e):
     """We're slightly abusing 412 to handle missing features
     depending on the API version."""
+    envs = environments()
     return render_template('412.html', envs=envs), 412
 
 
 @app.errorhandler(500)
 def server_error(e):
+    envs = environments()
     return render_template('500.html', envs=envs), 500
 
 
@@ -131,32 +132,52 @@ def index(env):
     :param env: Search for nodes in this (Catalog and Fact) environment
     :type env: :obj:`string`
     """
-    check_env(env)
-
-    # TODO: Would be great if we could parallelize this somehow, doing these
-    # requests in sequence is rather pointless.
-    prefix = 'puppetlabs.puppetdb.query.population'
-    num_nodes = get_or_abort(
-        puppetdb.metric,
-        "{0}{1}".format(prefix, ':type=default,name=num-nodes'))
-    num_resources = get_or_abort(
-        puppetdb.metric,
-        "{0}{1}".format(prefix, ':type=default,name=num-resources'))
-    avg_resources_node = get_or_abort(
-        puppetdb.metric,
-        "{0}{1}".format(prefix, ':type=default,name=avg-resources-per-node'))
+    envs = environments()
     metrics = {
-        'num_nodes': num_nodes['Value'],
-        'num_resources': num_resources['Value'],
-        'avg_resources_node': "{0:10.0f}".format(avg_resources_node['Value']),
-        }
+        'num_nodes': 0,
+        'num_resources': 0,
+        'avg_resources_node': 0}
+    check_env(env, envs)
 
     if env == '*':
-        query = None
+        query = app.config['OVERVIEW_FILTER']
+
+        prefix = 'puppetlabs.puppetdb.query.population'
+        num_nodes = get_or_abort(
+            puppetdb.metric,
+            "{0}{1}".format(prefix, ':type=default,name=num-nodes'))
+        num_resources = get_or_abort(
+            puppetdb.metric,
+            "{0}{1}".format(prefix, ':type=default,name=num-resources'))
+        avg_resources_node = get_or_abort(
+            puppetdb.metric,
+            "{0}{1}".format(prefix, ':type=default,name=avg-resources-per-node'))
+        metrics['num_nodes'] = num_nodes['Value']
+        metrics['num_resources'] = num_resources['Value']
+        metrics['avg_resources_node'] = "{0:10.0f}".format(
+            avg_resources_node['Value'])
     else:
-        query = '["and", {0}]'.format(
-                ", ".join('["=", "{0}", "{1}"]'.format(field, env)
-                    for field in ['catalog_environment', 'facts_environment']))
+        conditions = ", ".join('["=", "{0}", "{1}"]'.format(field, env)
+                  for field in ['catalog_environment', 'facts_environment'])
+        if app.config['OVERVIEW_FILTER'] != None:
+            conditions += ", {0}".format(app.config['OVERVIEW_FILTER'])
+        query = '["and", {0}]'.format(conditions)
+        num_nodes = get_or_abort(
+            puppetdb._query,
+            'nodes',
+            query='["extract", [["function", "count"]],["and", {0}]]'.format(
+                    ",".join('["=", "{0}", "{1}"]'.format(field, env)
+                        for field in ['catalog_environment', 'facts_environment'])))
+        num_resources = get_or_abort(
+            puppetdb._query,
+            'resources',
+            query='["extract", [["function", "count"]],' \
+                '["=", "environment", "{0}"]]'.format(
+                    env))
+        metrics['num_nodes'] = num_nodes[0]['count']
+        metrics['num_resources'] = num_resources[0]['count']
+        metrics['avg_resources_node'] = "{0:10.0f}".format(
+            (num_resources[0]['count'] / num_nodes[0]['count']))
 
     nodes = get_or_abort(puppetdb.nodes,
         query=query,
@@ -212,7 +233,8 @@ def nodes(env):
     :param env: Search for nodes in this (Catalog and Fact) environment
     :type env: :obj:`string`
     """
-    check_env(env)
+    envs = environments()
+    check_env(env, envs)
 
     if env == '*':
         query = None
@@ -255,7 +277,8 @@ def inventory(env):
     :param env: Search for facts in this environment
     :type env: :obj:`string`
     """
-    check_env(env)
+    envs = environments()
+    check_env(env, envs)
 
     fact_desc  = []     # a list of fact descriptions to go
                         # in the table header
@@ -427,7 +450,8 @@ def node(env, node_name):
     :param env: Ensure that the node, facts and reports are in this environment
     :type env: :obj:`string`
     """
-    check_env(env)
+    envs = environments()
+    check_env(env, envs)
 
     if env == '*':
         query = '["=", "certname", "{0}"]]'.format(node_name)
@@ -480,7 +504,8 @@ def reports(env, page):
         and this value
     :type page: :obj:`int`
     """
-    check_env(env)
+    envs = environments()
+    check_env(env, envs)
 
     if env == '*':
         reports_query = None
@@ -506,14 +531,22 @@ def reports(env, page):
         abort(404)
 
     for report in reports_events:
-        counts = get_or_abort(puppetdb.event_counts,
-            query='["and",' \
+        if env == '*':
+            event_count_query = '["and",' \
+                '["=", "certname", "{0}"],' \
+                '["=", "report", "{1}"]]'.format(
+                    report.node,
+                    report.hash_)
+        else:
+            event_count_query = '["and",' \
                 '["=", "environment", "{0}"],' \
                 '["=", "certname", "{1}"],' \
                 '["=", "report", "{2}"]]'.format(
                     env,
                     report.node,
-                    report.hash_),
+                    report.hash_)
+        counts = get_or_abort(puppetdb.event_counts,
+            query=event_count_query,
             summarize_by="certname")
         try:
             report_event_counts[report.hash_] = counts[0]
@@ -544,7 +577,8 @@ def reports_node(env, node_name, page):
         and this value
     :type page: :obj:`int`
     """
-    check_env(env)
+    envs = environments()
+    check_env(env, envs)
 
     if env == '*':
         query = '["=", "certname", "{0}"]]'.format(node_name)
@@ -572,11 +606,22 @@ def reports_node(env, node_name, page):
         abort(404)
 
     for report in reports_events:
-        counts = get_or_abort(puppetdb.event_counts,
-            query='["and",' \
+        if env == '*':
+            event_count_query = '["and",' \
+                '["=", "certname", "{0}"],' \
+                '["=", "report", "{1}"]]'.format(
+                    report.node,
+                    report.hash_)
+        else:
+            event_count_query = '["and",' \
                 '["=", "environment", "{0}"],' \
                 '["=", "certname", "{1}"],' \
-                '["=", "report", "{2}"]]'.format(env, report.node, report.hash_),
+                '["=", "report", "{2}"]]'.format(
+                    env,
+                    report.node,
+                    report.hash_)
+        counts = get_or_abort(puppetdb.event_counts,
+            query=event_count_query,
             summarize_by="certname")
         try:
             report_event_counts[report.hash_] = counts[0]
@@ -602,28 +647,47 @@ def report_latest(env, node_name):
     :param node_name: Find the reports whose certname match this value
     :type node_name: :obj:`string`
     """
-    check_env(env)
+    envs = environments()
+    check_env(env, envs)
 
     if env == '*':
-        query='["and",' \
-            '["=", "certname", "{0}"],' \
-            '["=", "latest_report?", true]]'.format(node_name)
+        node_query = '["=", "certname", "{0}"]'.format(node_name)
     else:
-        query='["and",' \
-            '["=", "environment", "{0}"],' \
-            '["=", "certname", "{1}"],' \
-            '["=", "latest_report?", true]]'.format(
-                env,
-                node_name)
+        node_query = '["and",' \
+            '["=", "report_environment", "{0}"],' \
+            '["=", "certname", "{1}"]]'.format(env, node_name)
 
-    reports = get_or_abort(puppetdb.reports, query=query)
     try:
-        report = next(reports)
+        node = next(get_or_abort(puppetdb.nodes,
+            query=node_query,
+            with_status=True))
     except StopIteration:
         abort(404)
 
+    if node.latest_report_hash is not None:
+        hash_ = node.latest_report_hash
+    else:
+        if env == '*':
+            query='["and",' \
+                '["=", "certname", "{0}"],' \
+                '["=", "latest_report?", true]]'.format(node.name)
+        else:
+            query='["and",' \
+                '["=", "environment", "{0}"],' \
+                '["=", "certname", "{1}"],' \
+                '["=", "latest_report?", true]]'.format(
+                    env,
+                    node.name)
+
+        reports = get_or_abort(puppetdb.reports, query=query)
+        try:
+            report = next(reports)
+            hash_ = report.hash_
+        except StopIteration:
+            abort(404)
+
     return redirect(
-        url_for('report', env=env, node_name=node_name, report_id=report.hash_))
+        url_for('report', env=env, node_name=node_name, report_id=hash_))
 
 
 @app.route('/report/<node_name>/<report_id>', defaults={'env': app.config['DEFAULT_ENVIRONMENT']})
@@ -644,7 +708,8 @@ def report(env, node_name, report_id):
         report
     :type report_id: :obj:`string`
     """
-    check_env(env)
+    envs = environments()
+    check_env(env, envs)
 
     if env == '*':
         query = '["and", ["=", "certname", "{0}"],' \
@@ -681,7 +746,8 @@ def facts(env):
         sake
     :type env: :obj:`string`
     """
-    check_env(env)
+    envs = environments()
+    check_env(env, envs)
 
     facts_dict = collections.defaultdict(list)
     facts = get_or_abort(puppetdb.fact_names)
@@ -709,7 +775,8 @@ def fact(env, fact):
     :param fact: Find all facts with this name
     :type fact: :obj:`string`
     """
-    check_env(env)
+    envs = environments()
+    check_env(env, envs)
 
     # we can only consume the generator once, lists can be doubly consumed
     # om nom nom
@@ -743,7 +810,8 @@ def fact_value(env, fact, value):
     :param value: Filter facts whose value is equal to this
     :type value: :obj:`string`
     """
-    check_env(env)
+    envs = environments()
+    check_env(env, envs)
 
     if env == '*':
         query = None
@@ -776,9 +844,10 @@ def query(env):
         select field in the environment block
     :type env: :obj:`string`
     """
-    check_env(env)
-
     if app.config['ENABLE_QUERY']:
+        envs = environments()
+        check_env(env, envs)
+
         form = QueryForm()
         if form.validate_on_submit():
             if form.query.data[0] == '[':
@@ -812,7 +881,8 @@ def metrics(env):
         for the environments template block
     :type env: :obj:`string`
     """
-    check_env(env)
+    envs = environments()
+    check_env(env, envs)
 
     metrics = get_or_abort(puppetdb._query, 'mbean')
     for key, value in metrics.items():
@@ -832,7 +902,8 @@ def metric(env, metric):
         for the environments template block
     :type env: :obj:`string`
     """
-    check_env(env)
+    envs = environments()
+    check_env(env, envs)
 
     name = unquote(metric)
     metric = puppetdb.metric(metric)
@@ -851,7 +922,8 @@ def catalogs(env):
     :param env: Find the nodes with this catalog_environment value
     :type env: :obj:`string`
     """
-    check_env(env)
+    envs = environments()
+    check_env(env, envs)
 
     if app.config['ENABLE_CATALOG']:
         nodenames = []
@@ -906,7 +978,8 @@ def catalog_node(env, node_name):
     :param env: Find the catalog with this environment value
     :type env: :obj:`string`
     """
-    check_env(env)
+    envs = environments()
+    check_env(env, envs)
 
     if app.config['ENABLE_CATALOG']:
         catalog = get_or_abort(puppetdb.catalog,
@@ -931,7 +1004,8 @@ def catalog_submit(env):
        catalogs page with the right environment.
     :type env: :obj:`string`
     """
-    check_env(env)
+    envs = environments()
+    check_env(env, envs)
 
     if app.config['ENABLE_CATALOG']:
         form = CatalogForm(request.form)
@@ -959,7 +1033,8 @@ def catalog_compare(env, compare, against):
     :param env: Ensure that the 2 catalogs are in the same environment
     :type env: :obj:`string`
     """
-    check_env(env)
+    envs = environments()
+    check_env(env, envs)
 
     if app.config['ENABLE_CATALOG']:
         compare_cat = get_or_abort(puppetdb.catalog,
