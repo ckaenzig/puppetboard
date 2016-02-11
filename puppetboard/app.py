@@ -355,7 +355,8 @@ def epfl_inventory(env):
     :param env: Search for facts in this environment
     :type env: :obj:`string`
     """
-    check_env(env)
+    envs = environments()
+    check_env(env, envs)
 
     fact_desc  = []     # a list of fact descriptions to go
                         # in the table header
