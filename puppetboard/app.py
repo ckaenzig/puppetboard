@@ -385,7 +385,7 @@ def epfl_inventory(env):
                       ('Operating System Release'  ,'operatingsystemrelease'),
                       ('Architecture'  ,'architecture'),
                       ('Serial Number'  ,'serialnumber'),
-                      ('Contract'  ,'contract') ]
+                      ('Contract'  ,'role_contract') ]
 
     # generate a list of descriptions and a list of fact names
     # from the list of tuples inv_facts.
@@ -429,13 +429,13 @@ def epfl_inventory(env):
 
     for node in nodelist:
         total_count += 1
-        if (factvalues[node,'contract'] in ['true', True] and factvalues[node,'is_virtual'] in ['false', False]):
+        if (factvalues[node,'role_contract'] in ['true', True] and factvalues[node,'is_virtual'] in ['false', False]):
           phys_contract_count += 1
-        elif (factvalues[node,'contract'] in ['true', True] and factvalues[node,'is_virtual'] in ['true', True]):
+        elif (factvalues[node,'role_contract'] in ['true', True] and factvalues[node,'is_virtual'] in ['true', True]):
             virt_contract_count += 1
-        elif (factvalues[node,'contract'] in ['false', False] and factvalues[node,'is_virtual'] in ['false', False]):
+        elif (factvalues[node,'role_contract'] in ['false', False] and factvalues[node,'is_virtual'] in ['false', False]):
             phys_non_contract_count += 1
-        elif (factvalues[node,'contract'] in ['false', False] and factvalues[node,'is_virtual'] in ['true', True]):
+        elif (factvalues[node,'role_contract'] in ['false', False] and factvalues[node,'is_virtual'] in ['true', True]):
             virt_non_contract_count += 1
 
     return Response(stream_with_context(
