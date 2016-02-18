@@ -371,21 +371,18 @@ def epfl_inventory(env):
     try:
         inv_facts = app.config['EPFL_INVENTORY_FACTS']
     except KeyError:
-        inv_facts = [ ('Hostname'      ,'fqdn'              ),
-                      ('Is Virtual'       ,'is_virtual'           ),
-                      ('Virtual'       ,'virtual'           ),
-                      ('Product Name'  ,'productname'       ),
-                      ('Warranty Days Left'  ,'warranty_days_left'),
-                      ('Warranty Start'  ,'warranty_start'),
-                      ('Warranty End'  ,'warranty_end'),
-                      ('Host Function'  ,'hostfunc'),
-                      ('Puppet Environment'  ,'puppet_environment'),
-                      ('Network Eth0'  ,'network_eth0'),
-                      ('Operating System'  ,'operatingsystem'),
-                      ('Operating System Release'  ,'operatingsystemrelease'),
-                      ('Architecture'  ,'architecture'),
-                      ('Serial Number'  ,'serialnumber'),
-                      ('Contract'  ,'role_contract') ]
+        inv_facts = [ ('Hostname', 'hostname'),
+                      ('Virtual', 'virtual'),
+                      ('IS Virtual', 'is_virtual'),
+                      ('Warranty Exp.', 'warranty_end'),
+                      ('Puppet Env.', 'role_puppet_environment'),
+                      ('OS', 'operatingsystem'),
+                      ('OS Release', 'operatingsystemrelease'),
+                      ('Uptime', 'uptime'),
+                      ('Contract', 'role_contract'),
+                      ('Service', 'role_vpsi_service_name'),
+                      ('Manager', 'role_vpsi_service_manager'),
+                    ]
 
     # generate a list of descriptions and a list of fact names
     # from the list of tuples inv_facts.
@@ -408,7 +405,7 @@ def epfl_inventory(env):
 
     # convert the json in easy to access data structure
     for fact in facts:
-        factvalues[fact.node,fact.name] = fact.value
+        factvalues[(fact.node,fact.name)] = fact.value
         nodelist.add(fact.node)
 
     # generate the per-host data
@@ -416,9 +413,9 @@ def epfl_inventory(env):
         nodedata[node] = []
         for fact_name in fact_names:
             try:
-                nodedata[node].append(factvalues[node,fact_name])
+                nodedata[node].append(factvalues[(node,fact_name)])
             except KeyError:
-                nodedata[node].append("undef")
+                nodedata[node].append("n/a")
 
     # Global counters
     phys_contract_count = 0
